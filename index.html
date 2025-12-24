@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulir Komplain MyRepublic</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; padding: 20px; color: #333; }
+        .container { max-width: 600px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: auto; }
+        h2 { color: #622d91; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #622d91; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 12px 5px; vertical-align: middle; }
+        label { font-weight: bold; font-size: 0.9em; }
+        input[type="text"], input[type="tel"], input[type="number"], input[type="file"], textarea { 
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box; 
+        }
+        /* Menghilangkan panah atas-bawah pada input number */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        
+        textarea { resize: vertical; }
+        .note { background: #fff4f4; color: #d93025; padding: 15px; border-radius: 8px; font-size: 0.85em; margin-bottom: 20px; border-left: 5px solid #d93025; line-height: 1.5; }
+        .btn-whatsapp { display: block; width: 100%; background: #25d366; color: white; text-align: center; padding: 15px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: 0.3s; }
+        .btn-whatsapp:hover { background: #128c7e; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Form Komplain WiFi</h2>
+    
+    <div class="note">
+        <strong>PENTING:</strong><br>
+        Komplain pelanggan tidak dilayani apabila tidak melampirkan bukti kerusakan (screenshot error) dan video indikator Router WiFi.
+    </div>
+
+    <form id="complaintForm">
+        <table>
+            <tr>
+                <td width="35%"><label>Nama</label></td>
+                <td><input type="text" id="nama" placeholder="Nama Lengkap" required></td>
+            </tr>
+            <tr>
+                <td><label>ID Pelanggan</label></td>
+                <td><input type="number" id="id_pelanggan" placeholder="Hanya angka (Contoh: 123456)" inputmode="numeric" required></td>
+            </tr>
+            <tr>
+                <td><label>Nomor HP</label></td>
+                <td><input type="tel" id="no_hp" placeholder="Contoh: 0812xxxx" required></td>
+            </tr>
+            <tr>
+                <td><label>Alamat</label></td>
+                <td><textarea id="alamat" rows="3" placeholder="Alamat lengkap pemasangan" required></textarea></td>
+            </tr>
+            <tr>
+                <td><label>Kendala</label></td>
+                <td><textarea id="kendala" rows="3" placeholder="Jelaskan kendala WiFi Anda" required></textarea></td>
+            </tr>
+            <tr>
+                <td><label>Upload Eviden</label></td>
+                <td><input type="file" id="eviden" accept="image/*,video/*" required></td>
+            </tr>
+        </table>
+
+        <a href="#" class="btn-whatsapp" onclick="sendToWhatsApp()">Kirim Laporan ke WhatsApp</a>
+    </form>
+</div>
+
+<script>
+    function sendToWhatsApp() {
+        const nama = document.getElementById('nama').value;
+        const id = document.getElementById('id_pelanggan').value;
+        const hp = document.getElementById('no_hp').value;
+        const alamat = document.getElementById('alamat').value;
+        const kendala = document.getElementById('kendala').value;
+
+        if(!nama || !id || !hp || !alamat || !kendala) {
+            alert("Mohon lengkapi semua kolom yang tersedia.");
+            return;
+        }
+
+        const message = `*LAPORAN GANGGUAN WIFI*%0A%0A` +
+                        `*Nama:* ${nama}%0A` +
+                        `*ID Pelanggan:* ${id}%0A` +
+                        `*No. HP:* ${hp}%0A` +
+                        `*Alamat:* ${alamat}%0A` +
+                        `*Kendala:* ${kendala}%0A%0A` +
+                        `mohon segera di bantu._`;
+
+        const phone = "6281908999242";
+        window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+    }
+</script>
+
+</body>
+</html>
+
