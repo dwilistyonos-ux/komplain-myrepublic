@@ -3,92 +3,357 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulir Komplain MyRepublic</title>
+    <title>Support Center MyRepublic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; padding: 20px; color: #333; }
-        .container { max-width: 600px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: auto; }
-        h2 { color: #622d91; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #622d91; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 12px 5px; vertical-align: middle; }
-        label { font-weight: bold; font-size: 0.9em; }
-        input[type="text"], input[type="tel"], input[type="number"], textarea { 
-            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box; 
+        :root {
+            --primary-color: #622d91;
+            --secondary-color: #00d2ff;
+            --accent-color: #ff3d00;
+            --success-color: #25d366;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: #ffffff;
         }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-gradient); 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px; 
+            margin: 0;
+            color: #2d3436; 
+        }
+
+        .container { 
+            max-width: 500px; 
+            width: 100%;
+            background: var(--card-bg); 
+            padding: 40px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
+            position: relative;
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 24px 24px 0 0;
+        }
+
+        h2 { 
+            color: var(--primary-color); 
+            text-align: center; 
+            margin-bottom: 5px; 
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .title-divider {
+            border-bottom: 3px dotted #ccc;
+            width: 60%;
+            margin: 0 auto 30px auto;
+        }
+
+        .note { 
+            background: #fff4f4; 
+            color: #d93025; 
+            padding: 15px; 
+            border-radius: 12px; 
+            font-size: 0.85em; 
+            margin-bottom: 25px; 
+            border-left: 4px solid var(--accent-color); 
+            line-height: 1.5;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        label { 
+            display: block;
+            font-weight: 600; 
+            font-size: 0.9em; 
+            margin-bottom: 8px;
+            color: #636e72;
+            font-style: italic;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input, textarea, select { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 2px solid #edf2f7; 
+            border-radius: 12px; 
+            font-size: 14px; 
+            transition: all 0.3s ease;
+            font-family: inherit;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+
+        select { 
+            appearance: none; 
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23636e72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+
+        input:focus, textarea:focus, select:focus { 
+            outline: none; 
+            border-color: var(--primary-color); 
+            box-shadow: 0 0 0 4px rgba(98, 45, 145, 0.1);
+        }
+
+        .btn-whatsapp { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%; 
+            background: var(--success-color); 
+            color: white; 
+            padding: 16px; 
+            text-decoration: none; 
+            border-radius: 14px; 
+            font-weight: 700; 
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .btn-whatsapp:hover { 
+            background: #1eb954; 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-box h3 { color: var(--primary-color); margin-bottom: 15px; }
+        .modal-box p { font-size: 0.95em; color: #4b4b4b; line-height: 1.6; margin-bottom: 25px; }
         
-        textarea { resize: vertical; }
-        .note { background: #fff4f4; color: #d93025; padding: 15px; border-radius: 8px; font-size: 0.85em; margin-bottom: 20px; border-left: 5px solid #d93025; line-height: 1.5; }
-        .info-bawah { margin-top: 15px; font-size: 0.85em; color: #555; text-align: center; font-style: italic; }
-        .btn-whatsapp { display: block; width: 100%; background: #25d366; color: white; text-align: center; padding: 15px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: 0.3s; }
-        .btn-whatsapp:hover { background: #128c7e; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-modal {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-back { background: #f1f2f6; color: #57606f; }
+        .btn-confirm { background: var(--success-color); color: white; }
+        .btn-confirm:hover { background: #1eb954; }
+
+        .info-bawah { 
+            margin-top: 20px; 
+            font-size: 0.8em; 
+            color: #b2bec3; 
+            text-align: center; 
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Komplain MyRepublic</h2>
+    <div class="title-divider"></div>
     
     <div class="note">
-        <strong>PENTING:</strong><br>
-        Komplain pelanggan tidak dilayani apabila tidak melampirkan bukti kerusakan (screenshot error) dan video indikator Router WiFi.
+        <strong>⚠️ PENTING:</strong><br>
+        Mohon lampirkan screenshot/foto error dan video indikator lampu Router setelah mengirim pesan ini ke WhatsApp.
     </div>
 
     <form id="complaintForm">
-        <table>
-            <tr>
-                <td width="35%"><label>Nama</label></td>
-                <td><input type="text" id="nama" placeholder="Nama Lengkap" required></td>
-            </tr>
-            <tr>
-                <td><label>ID Pelanggan</label></td>
-                <td><input type="number" id="id_pelanggan" placeholder="isi id pembayaran" inputmode="numeric" required></td>
-            </tr>
-            <tr>
-                <td><label>Nomor HP</label></td>
-                <td><input type="tel" id="no_hp" placeholder="Contoh: 0812xxxx" required></td>
-            </tr>
-            <tr>
-                <td><label>Alamat</label></td>
-                <td><textarea id="alamat" rows="3" placeholder="Alamat lengkap pemasangan" required></textarea></td>
-            </tr>
-            <tr>
-                <td><label>Kendala</label></td>
-                <td><textarea id="kendala" rows="3" placeholder="Jelaskan kendala WiFi Anda" required></textarea></td>
-            </tr>
-        </table>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Hari</label>
+                <select id="hari" required>
+                    <option value="">Pilih Hari</option>
+                    <option value="Senin">Senin</option>
+                    <option value="Selasa">Selasa</option>
+                    <option value="Rabu">Rabu</option>
+                    <option value="Kamis">Kamis</option>
+                    <option value="Jumat">Jumat</option>
+                    <option value="Sabtu">Sabtu</option>
+                    <option value="Minggu">Minggu</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tanggal</label>
+                <input type="date" id="tanggal" required>
+            </div>
+        </div>
 
-        <a href="#" class="btn-whatsapp" onclick="sendToWhatsApp()">Kirim Laporan ke WhatsApp</a>
+        <div class="form-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="nama" placeholder="Nama lengkap sesuai KTP/Aplikasi" required>
+        </div>
+
+        <div class="form-group">
+            <label>ID Pelanggan</label>
+            <input type="number" id="id_pelanggan" placeholder="Contoh: 12345678" required>
+        </div>
+
+        <div class="form-group">
+            <label>Nomor WhatsApp</label>
+            <input type="tel" id="no_hp" placeholder="0812xxxx" required>
+        </div>
+
+        <div class="form-group">
+            <label>Kendala WiFi</label>
+            <select id="kendala" required>
+                <option value="">Pilih Jenis Kendala</option>
+                <option value="Lampu Router LOS MERAH">🔴 Lampu Router LOS MERAH</option>
+                <option value="Internet tidak dapat digunakan">🚫 Internet tidak dapat digunakan</option>
+                <option value="Sinyal WiFi lemah">🛜 Sinyal WiFi lemah</option>
+                <option value="Koneksi sering terputus">🔄 Koneksi sering terputus</option>
+                <option value="TikTok lelet">📱 TikTok lelet / buffering</option>
+                <option value="YouTube lelet">🎥 YouTube lelet / buffering</option>
+                <option value="Facebook lelet">👥 Facebook lelet</option>
+                <option value="Browsing lelet">🌐 Browsing lelet</option>
+                <option value="Shopee lelet">🛍️ Shopee lelet</option>
+                <option value="tidak dapat mengakses perbankan">🏧 Tidak bisa akses aplikasi Bank</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Alamat Pemasangan</label>
+            <textarea id="alamat" rows="2" placeholder="Tulis alamat lengkap (Blok/No Rumah)" required></textarea>
+        </div>
+
+        <button type="button" class="btn-whatsapp" onclick="showConfirmation()">
+            Kirim Laporan via WhatsApp
+        </button>
         
-        <p class="info-bawah">
-            *Harap kirim bukti foto atau video kerusakan langsung di chat WhatsApp setelah pesan terkirim.
-        </p>
+        <p class="info-bawah">Sistem Tiket Support Terpadu MyRepublic</p>
     </form>
 </div>
 
-<script>
-    function sendToWhatsApp() {
-        const nama = document.getElementById('nama').value;
-        const id = document.getElementById('id_pelanggan').value;
-        const hp = document.getElementById('no_hp').value;
-        const alamat = document.getElementById('alamat').value;
-        const kendala = document.getElementById('kendala').value;
+<div id="modalOverlay" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Konfirmasi Data</h3>
+        <p>
+            Pastikan kembali kebenaran Data. <br><strong> ID Pelanggan, Alamat,  dan Nomor HP anda..</strong>  <br><br>
+            Laporan Anda akan diproses oleh tim teknis dalam waktu <strong>maksimal 24 Jam.</strong> <br<br>setelah laporan terkirim. cek WiFi secara berkala. <br><br>terima kasih 🙏</br>
+        </p>
+        <div class="modal-footer">
+            <button class="btn-modal btn-back" onclick="hideConfirmation()">Periksa Lagi</button>
+            <button class="btn-modal btn-confirm" onclick="sendToWhatsApp()">Ya, Sudah Benar</button>
+        </div>
+    </div>
+</div>
 
-        if(!nama || !id || !hp || !alamat || !kendala) {
-            alert("Mohon lengkapi semua kolom yang tersedia.");
+<script>
+    const modal = document.getElementById('modalOverlay');
+
+    function showConfirmation() {
+        // Ambil semua field wajib
+        const fields = ['hari', 'tanggal', 'nama', 'id_pelanggan', 'no_hp', 'kendala', 'alamat'];
+        let isComplete = true;
+
+        fields.forEach(id => {
+            if (!document.getElementById(id).value) {
+                isComplete = false;
+            }
+        });
+
+        if (!isComplete) {
+            alert("Harap isi semua kolom informasi sebelum mengirim laporan.");
             return;
         }
 
-        const message = `DEAR CS MyRepublic%0A%0A` +
-                        `- *Nama:* ${nama}%0A` +
-                        `- *ID Pelanggan:* ${id}%0A` +
-                        `- *No. HP:* ${hp}%0A` +
-                        `- *Alamat:* ${alamat}%0A` +
-                        `- *Kendala:* ${kendala}%0A%0A` +
-                        `_mohon bantuan dan segera diperbaiki._`;
+        modal.style.display = 'flex';
+    }
+
+    function hideConfirmation() {
+        modal.style.display = 'none';
+    }
+
+    function sendToWhatsApp() {
+        const hari = document.getElementById('hari').value;
+        const tanggal = document.getElementById('tanggal').value;
+        const nama = document.getElementById('nama').value;
+        const id = document.getElementById('id_pelanggan').value;
+        const hp = document.getElementById('no_hp').value;
+        const kendala = document.getElementById('kendala').value;
+        const alamat = document.getElementById('alamat').value;
+
+        const message = `*dear cs MyRepublic*%0A` +
+                        `------------------------------------------%0A` +
+                        `*Hari:* ${hari}%0A` +
+                        `*Tanggal:* ${tanggal}%0A` +
+                        `👤 *Nama:* ${nama}%0A` +
+                        `🆔 *ID Pelanggan:* ${id}%0A` +
+                        `📱 *No. HP:* ${hp}%0A` +
+                        `⚙️ *Kendala:* ${kendala}%0A` +
+                        `📍 *Alamat:* ${alamat}%0A` +
+                        `------------------------------------------%0A` +
+                        `_Mohon bantuan untuk pengecekan dan tindak lanjut laporan di atas. Terima kasih._`;
 
         const phone = "6281908999242";
         window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+        hideConfirmation();
+    }
+
+    // Tutup modal jika user klik di luar kotak putih
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            hideConfirmation();
+        }
     }
 </script>
 
