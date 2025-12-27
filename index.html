@@ -61,16 +61,25 @@
         .dropdown-menu {
             display: none; background: white; width: 100%;
             border: 2px solid #edf2f7; border-radius: 12px;
-            max-height: 300px; overflow-y: auto; margin-top: 10px;
+            max-height: 400px; overflow-y: auto; margin-top: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
         .dropdown-menu.show { display: block; }
 
+        .search-box {
+            position: sticky; top: 0; background: white; padding: 10px;
+            z-index: 11; border-bottom: 1px solid #eee;
+        }
+        .search-box input {
+            padding: 10px; border: 1px solid var(--primary-color);
+            border-radius: 8px; font-size: 13px;
+        }
+
         .cat-head {
             display: block; padding: 12px 15px; font-weight: 800; 
             background: #f8f9fa; color: var(--primary-color);
-            text-transform: uppercase; font-size: 0.75em;
+            text-transform: uppercase; font-size: 0.75em; position: sticky; top: 55px; z-index: 10;
         }
 
         .opt-item {
@@ -80,6 +89,15 @@
 
         .opt-item:hover { background: #f0f7ff; }
         .opt-item input { width: 18px; height: 18px; margin-right: 12px; }
+
+        .btn-selesai-container {
+            padding: 10px; background: #f8f9fa; position: sticky; bottom: 0;
+            border-top: 1px solid #eee; z-index: 10;
+        }
+        .btn-selesai {
+            width: 100%; padding: 10px; background: var(--primary-color);
+            color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;
+        }
 
         .btn-whatsapp { 
             width: 100%; background: var(--success-color); color: white; 
@@ -139,13 +157,22 @@
         </div>
 
         <div class="form-group">
+            <label>Alamat Pemasangan</label>
+            <textarea id="alamat" rows="2" placeholder="Alamat lengkap" required></textarea>
+        </div>
+
+        <div class="form-group">
             <label>Jenis Kendala (Maks. 5 Pilihan)</label>
             <div class="custom-select" id="selectToggle">
                 <span id="select-label">-- Klik untuk Pilih Kendala --</span>
                 <span>▼</span>
             </div>
             <div class="dropdown-menu" id="menuKendala">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Cari (cth: LOS, Lelet, Putus)..." onkeyup="filterKendala()">
                 </div>
+                <div id="listKendala"></div>
+            </div>
         </div>
 
         <div id="panduan">
@@ -154,11 +181,6 @@
             <div class="footer-saran">
                 Note : apabila jaringan WiFi masih eror harap hubungi saya kembali.
             </div>
-        </div>
-
-        <div class="form-group">
-            <label>Alamat Pemasangan</label>
-            <textarea id="alamat" rows="2" placeholder="Alamat lengkap" required></textarea>
         </div>
 
         <button type="button" class="btn-whatsapp" onclick="showPopup()">Kirim via WhatsApp</button>
@@ -182,48 +204,109 @@
 
 <script>
     const menu = document.getElementById('menuKendala');
+    const listKendala = document.getElementById('listKendala');
     const selectToggle = document.getElementById('selectToggle');
     
-    // Dataset Kendala Lengkap
     const dataKendala = {
-        "WHATSAPP & CHAT": ["WhatsApp Pending / Pesan tidak terkirim", "WhatsApp tidak bisa kirim gambar", "Pesan WA telat masuk", "VC WhatsApp terputus", "WhatsApp Web tidak konek"],
-        "MASALAH PERANGKAT": ["Adaptor mati", "Router mati total", "Kabel optik putus", "Lampu LOS Merah", "Lampu PON Berkedip", "Router sangat panas", "Router sering restart sendiri"],
-        "KONEKSI INTERNET": ["Internet Lambat", "Hanya Bisa YouTube", "Sinyal WiFi lemah", "Sering RTO (Request Time Out)", "WiFi tidak terdeteksi", "Ping Game Tinggi"],
-        "APLIKASI & SOSMED": ["TikTok lelet / buffering", "Instagram tidak bisa refresh feed", "Shopee lelet", "M-Banking Tidak Bisa Login", "Zoom/Google Meet putus-putus"],
-        "ADMINISTRASI": ["Buka Isolir (Sudah Bayar)", "Cek Status Tagihan", "Upgrade Kecepatan"]
+        "MASALAH FISIK & PERANGKAT": [
+            "Kabel Fiber Optik Putus", "Router Lampu LOS Merah", "Router Lampu PON Berkedip",
+            "Router Mati Total", "Adaptor Power Rusak/Mati", "Router Terasa Sangat Panas",
+            "Router Sering Restart Sendiri", "Kabel LAN Tidak Terdeteksi", "Port LAN Router Rusak"
+        ],
+        "KONEKSI INTERNET & WIFI": [
+            "Internet Tidak Nyambung", "WiFi Lelet / Lambat", "Sinyal WiFi Sering Hilang",
+            "Koneksi Sering Putus Nyambung", "WiFi Terhubung Tapi No Internet", "Sering RTO (Request Time Out)",
+            "Ping Game Tinggi / Lag", "WiFi Tidak Terdeteksi di HP/Laptop", "DNS Error / Tidak Bisa Browsing"
+        ],
+        "APLIKASI & SOSIAL MEDIA": [
+            "WhatsApp Lelet / Pending", "YouTube Buffering Terus", "Instagram Tidak Bisa Refresh",
+            "TikTok Loading / Lag", "Facebook Tidak Bisa Buka Gambar", "Netflix / Disney+ Lelet",
+            "Zoom / Google Meet Putus-putus", "M-Banking Tidak Bisa Login", "Shopee / Tokopedia Loading Lama"
+        ],
+        "GAME ONLINE": [
+            "Mobile Legends Lag / Merah", "PUBG / Free Fire High Ping", "Valorant Koneksi Error",
+            "Genshin Impact Reconnecting", "Roblox Tidak Bisa Masuk Server", "PlayStation Network Sign-in Failed"
+        ]
     };
 
     const solusiKamus = {
         "WhatsApp": "• Bersihkan Cache WhatsApp atau restart HP Anda.",
         "LOS": "• Cabut dan pasang kembali kabel kuning di belakang router.",
         "Mati": "• Coba pindahkan adaptor ke colokan listrik lain.",
-        "Lambat": "• Restart Router (matikan 30 detik lalu nyalakan).",
-        "Buffering": "• Gunakan frekuensi WiFi 5G jika perangkat mendukung."
+        "Internet": "• Restart Router (matikan 30 detik lalu nyalakan).",
+        "WiFi": "• Pastikan router diletakkan di area terbuka tanpa penghalang.",
+        "Lelet": "• Coba matikan WiFi di perangkat lain yang tidak terpakai.",
+        "Putus": "• Jangan menekuk kabel kuning karena sensitif.",
+        "Game": "• Gunakan kabel LAN untuk koneksi yang lebih stabil."
     };
 
     Object.keys(dataKendala).forEach(cat => {
-        let h = document.createElement('span'); h.className = 'cat-head'; h.innerText = cat;
-        menu.appendChild(h);
+        let h = document.createElement('span'); 
+        h.className = 'cat-head'; h.innerText = cat;
+        listKendala.appendChild(h);
+        
         dataKendala[cat].forEach(item => {
-            let d = document.createElement('div'); d.className = 'opt-item';
+            let d = document.createElement('div'); 
+            d.className = 'opt-item';
             d.innerHTML = `<input type="checkbox" name="kd" value="${item}"><span style="font-size:14px;">${item}</span>`;
             d.onclick = (e) => {
+                // Keyboard ditutup HANYA saat memilih item kendala agar daftar terlihat jelas
+                document.activeElement.blur();
                 const cb = d.querySelector('input');
                 const checked = document.querySelectorAll('input[name="kd"]:checked');
                 if (!cb.checked && checked.length >= 5) { alert("Maksimal 5 kendala."); return; }
                 cb.checked = !cb.checked;
                 updateUI(); e.stopPropagation();
             };
-            menu.appendChild(d);
+            listKendala.appendChild(d);
         });
     });
 
-    selectToggle.onclick = (e) => { menu.classList.toggle('show'); e.stopPropagation(); };
-    window.onclick = (e) => { if (!e.target.closest('.custom-select') && !e.target.closest('.dropdown-menu')) menu.classList.remove('show'); };
+    const selesaiDiv = document.createElement('div');
+    selesaiDiv.className = 'btn-selesai-container';
+    selesaiDiv.innerHTML = `<button type="button" class="btn-selesai" onclick="closeDropdown()">Selesai & Simpan</button>`;
+    menu.appendChild(selesaiDiv);
+
+    function filterKendala() {
+        let input = document.getElementById('searchInput').value.toLowerCase();
+        let items = listKendala.getElementsByClassName('opt-item');
+        let cats = listKendala.getElementsByClassName('cat-head');
+        for (let i = 0; i < items.length; i++) {
+            let text = items[i].innerText.toLowerCase();
+            items[i].style.display = text.includes(input) ? "flex" : "none";
+        }
+        for (let j = 0; j < cats.length; j++) {
+            cats[j].style.display = input === "" ? "block" : "none";
+        }
+    }
+
+    function closeDropdown() { 
+        menu.classList.remove('show'); 
+    }
+
+    selectToggle.onclick = (e) => { 
+        // Keyboard hanya ditutup jika kita membuka dropdown, kolom input lain tidak terganggu
+        if (!menu.classList.contains('show')) {
+            document.activeElement.blur();
+        }
+        menu.classList.toggle('show'); 
+        if (menu.classList.contains('show')) {
+            setTimeout(() => { selectToggle.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+        }
+        e.stopPropagation(); 
+    };
+
+    // PERBAIKAN: Menghapus document.activeElement.blur() dari window.onclick 
+    // agar tidak mematikan keyboard kolom Nama/ID saat layar lain diklik.
+    window.onclick = (e) => { 
+        if (!e.target.closest('.custom-select') && !e.target.closest('.dropdown-menu')) {
+            closeDropdown();
+        }
+    };
 
     function updateUI() {
         const checked = document.querySelectorAll('input[name="kd"]:checked');
-        document.getElementById('select-label').innerText = checked.length > 0 ? `${checked.length} Terpilih` : "-- Klik untuk Pilih Kendala --";
+        document.getElementById('select-label').innerText = checked.length > 0 ? `${checked.length} Kendala Terpilih` : "-- Klik untuk Pilih Kendala --";
         const pnd = document.getElementById('panduan');
         const tips = document.getElementById('tipsContent');
         if (checked.length > 0) {
@@ -255,7 +338,6 @@
         const kendala = Array.from(document.querySelectorAll('input[name="kd"]:checked')).map(c => c.value).join(", ");
         const alamat = document.getElementById('alamat').value;
 
-        // Format Pesan Sesuai Permintaan
         const message = `*dear cs MyRepublic*%0A` +
                         `------------------------------------------%0A` +
                         `*Hari:* ${hari}%0A` +
